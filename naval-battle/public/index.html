@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="toastr.css">
+        <title>Batalla Naval</title>
+    </head>
+    <body>
+        <div id="game_join_container">
+            <div id="game_join_menu">
+                <div id="start_game_join_section" class="initially-hidden-block">
+                    <div id="nombre">
+                        <div class="input">
+                            <input type="text" id="player_name_input" class="center-text" value="" spellcheck="false" onchange="this.setAttribute('value', this.value);">
+                            <div class="field-name">Nombre de jugador <span class="optional-indicator">(opcional)</span></div>
+                        </div>
+                    </div>
+                    <div id="create_or_join_section">
+                        <div id="create" class="padding-all-directions">
+                            <button id="create_game">Crear una nueva partida ></button>
+                        </div>
+                        <div id="borde"></div>
+                        <div id="join" class="padding-all-directions">
+                            <div id="join_dialog_box" class="dialog-box top fade"><div class="arrow"></div><span></span></div>
+                            <div class="input">
+                                <input type="text" id="game_id_input" class="center-text" value="" onchange="this.setAttribute('value', this.value);">
+                                <div class="field-name">Código para unirse</div>
+                            </div>
+                            <button id="join_game">Unirse a la partida ></button>
+                        </div>
+                    </div>
+                </div>
+                <div id="rejoin_game_join_section" class="initially-hidden-block">
+                    <div id="rejoin">
+                        <div>Hay una partida en curso</div>
+                        <div id="rejoin_nobody_connected" class="initially-hidden-block">Nadie está conectado a la partida</div>
+                        <div id="rejoin_opponent_status" class="initially-hidden-block">El oponente <span id="rejoin_opponent_name"></span> está <span id="rejoin_opponent_connected" class="initially-hidden-inline">conectado</span><span id="rejoin_opponent_absent" class="initially-hidden-inline">ausente</span>.</div>
+                        <button id="rejoin_game">Reconectarse a la partida ></button>
+                        <button id="rejoin_quit_game">Abandonar la partida</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="game_container">
+            <div id="player_names">
+                <div id="status_area_top" class="status_area"></div>
+                <span class="left-player-info-line player-info-line">
+                    <table class="player-info">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div id="my_info">
+                                        <span id="my_name"></span>
+                                        <div id="my_ready">
+                                            <!--<input type="checkbox" id="ready" style="display: inline;width: .75em;height: .75em" disabled><label for="ready" style="vertical-align: .025em">Estoy listo</label>-->
+                                            <div class="checkbox-wrapper">
+                                                <input type="checkbox" id="ready" class="inp-checkbox" disabled/>
+                                                <label id="checkbox_label" for="ready" class="checkbox">
+                                                    <span id="checkbox_box">
+                                                        <div class="background-fill"></div>
+                                                        <div class="shape-to-animate-on-check"></div>
+                                                        <svg width="80%" height="80%">
+                                                            <use xlink:href="#check"></use>
+                                                        </svg>
+                                                    </span>
+                                                    <span>Estoy listo</span>
+                                                </label>
+                                                <div id="ready_dialog_box" class="dialog-box bottom fade"><div class="arrow"></div>Todos los barcos deben estar posicionados para poder estar listo.</div>
+                                                <svg class="inline-svg">
+                                                    <symbol id="check" viewbox="0 0 12 10">
+                                                    <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                                                    </symbol>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div id="my_win_text" class="player-status green-text-shadow">
+                                            Ganador
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div id="my_turn" style="margin-right:5%;color:#000080;visibility:hidden"><</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </span>
+                <div id="status_area_middle" class="status_area"></div>
+                <span class="right-player-info-line player-info-line">
+                    <table class="player-info">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div id="opponent_turn" style="margin-left:5%;color:#000080;visibility:hidden">></div>
+                                </td>
+                                <td>
+                                    <div id="opponent_info">
+                                        <span id="opponent_name">
+                                            <span class="gray-text-color">Esperando jugador...</span>
+                                        </span>
+                                        <div id="opponent_ready" class="player-status green-text-shadow"><svg height="1em" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="12.75 13.34 75.75 74.09" xml:space="preserve" style="overflow: visible;vertical-align: -0.17em;"><style type="text/css">.check{fill:#00FF00;filter: drop-shadow(0 0 4px black);}</style><path class="check" d="M14.4,51.1c0,0,3.5-3.3,7.8-2.1c4.4,1.2,8,4.2,10.7,7.2c2.7,3,3.9,6.9,3.9,6.9s13.9-18.8,25-30.2  c10.3-10.6,20.5-17.3,21.7-18.2c1.2-0.9,2.9-2,3.8-0.9c0.9,1.1,1.7,2.1,0.8,3.2S72.9,34.5,65.5,44.3c-8.3,11-13.4,21.5-21.5,33.5  C42,80.9,37,87.9,33,87.4c-1.1-0.1-4.3-10.3-5.3-12.3c-2.2-4.4-5.5-10.8-11.6-17C13.3,55.5,11.1,54.1,14.4,51.1z"/></svg> Listo</div>
+                                        <div id="opponent_preparing" class="player-status">Preparándose</div>
+                                        <div id="opponent_absent" class="player-status gray-text-color">Ausente</div>
+                                        <div id="opponent_win_text" class="player-status green-text-shadow">
+                                            Ganador
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </span>
+            </div>
+            <div id="game_boards">
+                <div id="own_board_container" class="board-container"></div>
+                <div id="opposite_container" style="position: relative;">
+                    <div id="ship_select">
+                        <p class="ship-select-instructions">Posicioná los barcos arrastrándolos hacia el tablero.</p>
+                        <p class="ship-select-instructions">Para girar, arrastrá haciendo:</p>
+                        <div class="ship-select-instructions">
+                            <span id="mouse_rotate_instructions" class="rotation-instructions">
+                                <img src="mouse-right-click.svg">
+                                <span>Clic secundario</span>
+                            </span>
+                            <span id="touch_rotate_instructions" class="rotation-instructions">
+                                <img src="touch-double-tap.svg">
+                                <span>Toque doble</span>
+                            </span>
+                        </div>
+                        <div class="ship-select-list">
+                            <div>
+                                <p>LANCHA</p>
+                                <div id="launch_container" class="ship-container">
+                                    <div id="launch" class="ship not_moving">
+                                        <div><div class="hole"></div></div>
+                                        <div><div class="hole"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <p>CRUCERO</p>
+                                <div id="cruise_container" class="ship-container">
+                                    <div id="cruise" class="ship not_moving">
+                                        <div><div class="hole"></div></div>
+                                        <div><div class="hole"></div></div>
+                                        <div><div class="hole"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <p>SUBMARINO</p>
+                                <div id="submarine_container" class="ship-container">
+                                    <div id="submarine" class="ship not_moving">
+                                        <div><div class="hole"></div></div>
+                                        <div><div class="hole"></div></div>
+                                        <div><div class="hole"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ship-select-list">
+                            <div>
+                                <p>BUQUE</p>
+                                <div id="vessel_container" class="ship-container">
+                                    <div id="vessel" class="ship not_moving">
+                                        <div><div class="hole"></div></div>
+                                        <div><div class="hole"></div></div>
+                                        <div><div class="hole"></div></div>
+                                        <div><div class="hole"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <p>PORTAAVIONES</p>
+                                <div id="carrier_container" class="ship-container">
+                                    <div id="carrier" class="ship not_moving">
+                                        <div><div class="hole"></div></div>
+                                        <div><div class="hole"></div></div>
+                                        <div><div class="hole"></div></div>
+                                        <div><div class="hole"></div></div>
+                                        <div><div class="hole"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="opposite_board_container" class="hide board-container"></div>
+                </div>
+            </div>
+            <div id="chat_div" class="rounded_box">
+                <div id="chat_messages_container" class="rounded_box margin-bottom">
+                    <div id="chat_messages"></div>
+                </div>
+                <div style="display:flex;">
+                    <div class="input" style="flex-grow: 1;">
+                        <input type="text" id="chat_text_to_send_input" value="" placeholder="Escribí un mensaje..." onchange="this.setAttribute('value', this.value);">
+                        <div class="field-name">Mensaje</div>
+                    </div>
+                    <button id="chat_send_message_button">Enviar</button>
+                </div>
+            </div>
+            <div class="quit-game-button-container">
+                <button id="playing_quit_game" class="quit-game-button">Abandonar la partida</button>
+            </div>
+        </div>
+        <h1 id="game_title">BATALLA NAVAL</h1>
+        <script src="jquery-1.12.0.js"></script>
+        <script src="toastr.js"></script>
+        <script src="./index.js"></script>
+    </body>
+</html>
